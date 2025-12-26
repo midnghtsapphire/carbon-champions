@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -245,9 +245,11 @@ export default function Dashboard() {
           <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-bold text-foreground">Active Challenges</h2>
-              <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground">
-                View All <ChevronRight className="w-4 h-4" />
-              </Button>
+              <Link to="/challenges">
+                <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-primary">
+                  View All <ChevronRight className="w-4 h-4" />
+                </Button>
+              </Link>
             </div>
             
             {challenges.length === 0 ? (
