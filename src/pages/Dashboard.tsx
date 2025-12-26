@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import CarbonEntryForm from '@/components/CarbonEntryForm';
+import CarbonEntryHistory from '@/components/CarbonEntryHistory';
 import { 
   Leaf, 
   LogOut, 
@@ -12,7 +13,8 @@ import {
   Trophy, 
   Target,
   Plus,
-  ChevronRight
+  ChevronRight,
+  History
 } from 'lucide-react';
 
 interface Profile {
@@ -49,6 +51,7 @@ export default function Dashboard() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [showEntryForm, setShowEntryForm] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -227,10 +230,16 @@ export default function Dashboard() {
               <h2 className="text-xl font-bold text-foreground mb-1">Log Your Carbon Activity</h2>
               <p className="text-muted-foreground">Track your daily activities to reduce your footprint.</p>
             </div>
-            <Button variant="hero" size="lg" className="gap-2" onClick={() => setShowEntryForm(true)}>
-              <Plus className="w-5 h-5" />
-              Log Entry
-            </Button>
+            <div className="flex gap-3">
+              <Button variant="outline" size="lg" className="gap-2" onClick={() => setShowHistory(true)}>
+                <History className="w-5 h-5" />
+                History
+              </Button>
+              <Button variant="hero" size="lg" className="gap-2" onClick={() => setShowEntryForm(true)}>
+                <Plus className="w-5 h-5" />
+                Log Entry
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -238,6 +247,12 @@ export default function Dashboard() {
           open={showEntryForm} 
           onClose={() => setShowEntryForm(false)}
           onSuccess={fetchDashboardData}
+        />
+
+        <CarbonEntryHistory
+          open={showHistory}
+          onClose={() => setShowHistory(false)}
+          onUpdate={fetchDashboardData}
         />
 
         <div className="grid md:grid-cols-2 gap-8">
