@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useAchievements } from '@/hooks/useAchievements';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -97,6 +98,7 @@ interface CarbonEntryFormProps {
 
 export default function CarbonEntryForm({ open, onClose, onSuccess }: CarbonEntryFormProps) {
   const { user } = useAuth();
+  const { checkAchievements } = useAchievements();
   const [category, setCategory] = useState<CategoryKey | ''>('');
   const [activity, setActivity] = useState('');
   const [quantity, setQuantity] = useState('');
@@ -168,6 +170,9 @@ export default function CarbonEntryForm({ open, onClose, onSuccess }: CarbonEntr
           ? `You saved ${Math.abs(calculatedCarbon).toFixed(2)} kg CO₂!`
           : `Logged ${calculatedCarbon.toFixed(2)} kg CO₂ emission.`,
       });
+
+      // Check for newly unlocked achievements
+      checkAchievements();
 
       resetForm();
       onSuccess?.();
