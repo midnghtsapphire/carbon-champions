@@ -27,8 +27,8 @@ import {
   ShoppingBag,
   Leaf,
   Calculator,
-  X
 } from 'lucide-react';
+import { getCarbonComparisons, formatComparisonValue } from '@/lib/carbonComparisons';
 import { toast } from '@/hooks/use-toast';
 
 // Carbon emission factors (kg CO2 per unit)
@@ -280,7 +280,7 @@ export default function CarbonEntryForm({ open, onClose, onSuccess }: CarbonEntr
                 ? 'bg-primary/10 border border-primary/30' 
                 : 'bg-accent/10 border border-accent/30'
             }`}>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-3">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                   isReduction ? 'bg-primary/20' : 'bg-accent/20'
                 }`}>
@@ -293,6 +293,30 @@ export default function CarbonEntryForm({ open, onClose, onSuccess }: CarbonEntr
                   <p className={`text-2xl font-bold ${isReduction ? 'text-primary' : 'text-accent'}`}>
                     {isReduction ? '-' : '+'}{Math.abs(calculatedCarbon).toFixed(2)} kg
                   </p>
+                </div>
+              </div>
+              
+              {/* CO2 Comparisons */}
+              <div className="border-t border-border/50 pt-3">
+                <p className="text-xs text-muted-foreground mb-2">
+                  {isReduction ? "That's like saving:" : "That's equivalent to:"}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {getCarbonComparisons(calculatedCarbon).map((comp, idx) => {
+                    const Icon = comp.icon;
+                    return (
+                      <div 
+                        key={idx}
+                        className="flex items-center gap-1.5 bg-background/50 px-2 py-1 rounded-md text-xs"
+                      >
+                        <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="font-medium text-foreground">
+                          {formatComparisonValue(comp.value)}
+                        </span>
+                        <span className="text-muted-foreground">{comp.unit}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

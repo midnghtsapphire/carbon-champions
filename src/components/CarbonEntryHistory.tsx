@@ -42,6 +42,7 @@ import {
   X
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { getCarbonComparisons, formatComparisonValue } from '@/lib/carbonComparisons';
 
 interface CarbonEntry {
   id: string;
@@ -265,6 +266,19 @@ export default function CarbonEntryHistory({ open, onClose, onUpdate }: CarbonEn
                 CO₂ Saved
               </div>
               <p className="text-xl font-bold text-foreground">{totalReduced.toFixed(1)} kg</p>
+              {totalReduced > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {getCarbonComparisons(totalReduced).map((comp, idx) => {
+                    const Icon = comp.icon;
+                    return (
+                      <div key={idx} className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Icon className="w-3 h-3" />
+                        <span>{formatComparisonValue(comp.value)} {comp.unit}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
               <div className="flex items-center gap-2 text-accent text-sm mb-1">
@@ -272,6 +286,19 @@ export default function CarbonEntryHistory({ open, onClose, onUpdate }: CarbonEn
                 CO₂ Emitted
               </div>
               <p className="text-xl font-bold text-foreground">{totalEmitted.toFixed(1)} kg</p>
+              {totalEmitted > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {getCarbonComparisons(totalEmitted).map((comp, idx) => {
+                    const Icon = comp.icon;
+                    return (
+                      <div key={idx} className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Icon className="w-3 h-3" />
+                        <span>{formatComparisonValue(comp.value)} {comp.unit}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
