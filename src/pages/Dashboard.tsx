@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import CarbonEntryForm from '@/components/CarbonEntryForm';
 import CarbonEntryHistory from '@/components/CarbonEntryHistory';
+import CarbonAnalytics from '@/components/CarbonAnalytics';
 import { 
   Leaf, 
   LogOut, 
@@ -15,7 +16,8 @@ import {
   Plus,
   ChevronRight,
   History,
-  User
+  User,
+  BarChart3
 } from 'lucide-react';
 
 interface Profile {
@@ -53,6 +55,7 @@ export default function Dashboard() {
   const [loadingData, setLoadingData] = useState(true);
   const [showEntryForm, setShowEntryForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -237,6 +240,10 @@ export default function Dashboard() {
               <p className="text-muted-foreground">Track your daily activities to reduce your footprint.</p>
             </div>
             <div className="flex gap-3">
+              <Button variant="outline" size="lg" className="gap-2" onClick={() => setShowAnalytics(true)}>
+                <BarChart3 className="w-5 h-5" />
+                Analytics
+              </Button>
               <Button variant="outline" size="lg" className="gap-2" onClick={() => setShowHistory(true)}>
                 <History className="w-5 h-5" />
                 History
@@ -259,6 +266,11 @@ export default function Dashboard() {
           open={showHistory}
           onClose={() => setShowHistory(false)}
           onUpdate={fetchDashboardData}
+        />
+
+        <CarbonAnalytics
+          open={showAnalytics}
+          onClose={() => setShowAnalytics(false)}
         />
 
         <div className="grid md:grid-cols-2 gap-8">
