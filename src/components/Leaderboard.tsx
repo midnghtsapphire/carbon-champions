@@ -1,14 +1,81 @@
-import { Trophy, TrendingDown, Flame, Medal } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Trophy, TrendingDown, Flame, Medal, Wifi } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
-const leaderboardData = [
-  { rank: 1, name: "Sarah Chen", city: "San Francisco", reduction: 42, streak: 28, avatar: "SC" },
-  { rank: 2, name: "Marcus Johnson", city: "Austin", reduction: 38, streak: 21, avatar: "MJ" },
-  { rank: 3, name: "Emma Wilson", city: "Seattle", reduction: 35, streak: 14, avatar: "EW" },
-  { rank: 4, name: "David Kim", city: "Boston", reduction: 33, streak: 35, avatar: "DK" },
-  { rank: 5, name: "Lisa Martinez", city: "Denver", reduction: 31, streak: 19, avatar: "LM" },
-];
+interface LeaderboardEntry {
+  user_id: string | null;
+  display_name: string | null;
+  username: string | null;
+  avatar_url: string | null;
+  city: string | null;
+  weekly_reduction: number | null;
+  current_streak: number | null;
+}
 
 const Leaderboard = () => {
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+
+  const fetchLeaderboard = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('weekly_leaderboard')
+        .select('*')
+        .order('weekly_reduction', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      setLeaderboardData(data || []);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeaderboard();
+
+    // Subscribe to realtime updates on carbon_entries
+    const channel = supabase
+      .channel('leaderboard-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'carbon_entries'
+        },
+        () => {
+          // Refetch leaderboard when carbon entries change
+          fetchLeaderboard();
+        }
+      )
+      .subscribe((status) => {
+        setIsLive(status === 'SUBSCRIBED');
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const getInitials = (name: string | null) => {
+    if (!name) return '??';
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const formatReduction = (value: number | null) => {
+    if (value === null || value === 0) return '0';
+    return value.toFixed(1);
+  };
+
   return (
     <section className="py-24 bg-background relative overflow-hidden" id="leaderboard">
       {/* Background glow */}
@@ -56,59 +123,101 @@ const Leaderboard = () => {
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold">This Week's Top Players</h3>
-                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                  Live
+                <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
+                  isLive 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'bg-muted/50 text-muted-foreground'
+                }`}>
+                  <Wifi className={`w-3 h-3 ${isLive ? 'animate-pulse' : ''}`} />
+                  {isLive ? 'Live' : 'Connecting...'}
                 </span>
               </div>
 
               {/* Leaderboard list */}
               <div className="space-y-3">
-                {leaderboardData.map((player, index) => (
-                  <div
-                    key={player.name}
-                    className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-secondary/50 ${
-                      index === 0 ? 'bg-accent/10 border border-accent/20' : ''
-                    }`}
-                  >
-                    {/* Rank */}
-                    <div className="w-8 flex justify-center">
-                      {player.rank === 1 ? (
-                        <Medal className="w-6 h-6 text-accent" />
-                      ) : player.rank === 2 ? (
-                        <Medal className="w-6 h-6 text-muted-foreground" />
-                      ) : player.rank === 3 ? (
-                        <Medal className="w-6 h-6 text-amber-700" />
-                      ) : (
-                        <span className="text-muted-foreground font-medium">{player.rank}</span>
-                      )}
-                    </div>
-
-                    {/* Avatar */}
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
-                      index === 0 ? 'bg-accent text-accent-foreground' : 'bg-secondary text-foreground'
-                    }`}>
-                      {player.avatar}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold truncate">{player.name}</p>
-                      <p className="text-sm text-muted-foreground">{player.city}</p>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1 text-sm">
-                        <Flame className="w-4 h-4 text-accent" />
-                        <span>{player.streak}</span>
+                {loading ? (
+                  // Loading skeleton
+                  [...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-secondary/30 animate-pulse">
+                      <div className="w-8 h-6 bg-muted rounded" />
+                      <div className="w-10 h-10 rounded-full bg-muted" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted rounded w-24" />
+                        <div className="h-3 bg-muted rounded w-16" />
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-primary">-{player.reduction}%</p>
-                        <p className="text-xs text-muted-foreground">CO₂</p>
-                      </div>
+                      <div className="w-16 h-8 bg-muted rounded" />
                     </div>
+                  ))
+                ) : leaderboardData.length === 0 ? (
+                  // Empty state
+                  <div className="text-center py-8">
+                    <Trophy className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
+                    <p className="text-muted-foreground">No entries yet this week</p>
+                    <p className="text-sm text-muted-foreground/70">Be the first to log your carbon savings!</p>
                   </div>
-                ))}
+                ) : (
+                  // Leaderboard entries
+                  leaderboardData.map((player, index) => (
+                    <div
+                      key={player.user_id || index}
+                      className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-secondary/50 ${
+                        index === 0 ? 'bg-accent/10 border border-accent/20' : ''
+                      }`}
+                    >
+                      {/* Rank */}
+                      <div className="w-8 flex justify-center">
+                        {index === 0 ? (
+                          <Medal className="w-6 h-6 text-accent" />
+                        ) : index === 1 ? (
+                          <Medal className="w-6 h-6 text-muted-foreground" />
+                        ) : index === 2 ? (
+                          <Medal className="w-6 h-6 text-amber-700" />
+                        ) : (
+                          <span className="text-muted-foreground font-medium">{index + 1}</span>
+                        )}
+                      </div>
+
+                      {/* Avatar */}
+                      {player.avatar_url ? (
+                        <img 
+                          src={player.avatar_url} 
+                          alt={player.display_name || 'User'} 
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+                          index === 0 ? 'bg-accent text-accent-foreground' : 'bg-secondary text-foreground'
+                        }`}>
+                          {getInitials(player.display_name || player.username)}
+                        </div>
+                      )}
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold truncate">
+                          {player.display_name || player.username || 'Anonymous'}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {player.city || 'Earth'}
+                        </p>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1 text-sm" title="Current streak">
+                          <Flame className="w-4 h-4 text-accent" />
+                          <span>{player.current_streak || 0}</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-primary">
+                            -{formatReduction(player.weekly_reduction)} kg
+                          </p>
+                          <p className="text-xs text-muted-foreground">CO₂</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               {/* Footer */}
