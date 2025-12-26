@@ -14,16 +14,282 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string | null
+          id: string
+          name: string
+          requirement_type: string
+          requirement_value: number
+          xp_reward: number | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          icon?: string | null
+          id?: string
+          name: string
+          requirement_type: string
+          requirement_value: number
+          xp_reward?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          requirement_type?: string
+          requirement_value?: number
+          xp_reward?: number | null
+        }
+        Relationships: []
+      }
+      carbon_entries: {
+        Row: {
+          activity: string
+          carbon_amount: number
+          category: string
+          created_at: string
+          entry_date: string
+          id: string
+          is_reduction: boolean | null
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          activity: string
+          carbon_amount: number
+          category: string
+          created_at?: string
+          entry_date?: string
+          id?: string
+          is_reduction?: boolean | null
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          activity?: string
+          carbon_amount?: number
+          category?: string
+          created_at?: string
+          entry_date?: string
+          id?: string
+          is_reduction?: boolean | null
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      challenges: {
+        Row: {
+          challenge_type: string
+          created_at: string
+          description: string
+          end_date: string
+          id: string
+          is_active: boolean | null
+          name: string
+          start_date: string
+          target_value: number
+          xp_reward: number | null
+        }
+        Insert: {
+          challenge_type: string
+          created_at?: string
+          description: string
+          end_date: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          start_date: string
+          target_value: number
+          xp_reward?: number | null
+        }
+        Update: {
+          challenge_type?: string
+          created_at?: string
+          description?: string
+          end_date?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          start_date?: string
+          target_value?: number
+          xp_reward?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          current_streak: number | null
+          display_name: string | null
+          id: string
+          level: number | null
+          longest_streak: number | null
+          total_carbon_saved: number | null
+          updated_at: string
+          user_id: string
+          username: string | null
+          xp_points: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          current_streak?: number | null
+          display_name?: string | null
+          id?: string
+          level?: number | null
+          longest_streak?: number | null
+          total_carbon_saved?: number | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+          xp_points?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          current_streak?: number | null
+          display_name?: string | null
+          id?: string
+          level?: number | null
+          longest_streak?: number | null
+          total_carbon_saved?: number | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+          xp_points?: number | null
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_challenges: {
+        Row: {
+          challenge_id: string
+          completed: boolean | null
+          completed_at: string | null
+          id: string
+          joined_at: string
+          progress: number | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed?: boolean | null
+          completed_at?: string | null
+          id?: string
+          joined_at?: string
+          progress?: number | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          id?: string
+          joined_at?: string
+          progress?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      weekly_leaderboard: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          current_streak: number | null
+          display_name: string | null
+          user_id: string | null
+          username: string | null
+          weekly_reduction: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +416,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
