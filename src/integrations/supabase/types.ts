@@ -122,6 +122,119 @@ export type Database = {
         }
         Relationships: []
       }
+      companies: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          member_count: number | null
+          name: string
+          total_carbon_saved: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          member_count?: number | null
+          name: string
+          total_carbon_saved?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          member_count?: number | null
+          name?: string
+          total_carbon_saved?: number | null
+        }
+        Relationships: []
+      }
+      imported_transactions: {
+        Row: {
+          amount: number
+          carbon_impact: number | null
+          category: string | null
+          created_at: string
+          date: string
+          id: string
+          merchant_name: string | null
+          plaid_account_id: string | null
+          processed: boolean | null
+          transaction_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          carbon_impact?: number | null
+          category?: string | null
+          created_at?: string
+          date: string
+          id?: string
+          merchant_name?: string | null
+          plaid_account_id?: string | null
+          processed?: boolean | null
+          transaction_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          carbon_impact?: number | null
+          category?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          merchant_name?: string | null
+          plaid_account_id?: string | null
+          processed?: boolean | null
+          transaction_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imported_transactions_plaid_account_id_fkey"
+            columns: ["plaid_account_id"]
+            isOneToOne: false
+            referencedRelation: "plaid_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plaid_accounts: {
+        Row: {
+          access_token: string
+          account_name: string | null
+          created_at: string
+          id: string
+          institution_name: string | null
+          is_active: boolean | null
+          item_id: string
+          last_sync_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          account_name?: string | null
+          created_at?: string
+          id?: string
+          institution_name?: string | null
+          is_active?: boolean | null
+          item_id: string
+          last_sync_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          account_name?: string | null
+          created_at?: string
+          id?: string
+          institution_name?: string | null
+          is_active?: boolean | null
+          item_id?: string
+          last_sync_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -243,6 +356,69 @@ export type Database = {
           },
         ]
       }
+      user_companies: {
+        Row: {
+          company_id: string
+          id: string
+          joined_at: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          id?: string
+          joined_at?: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          id?: string
+          joined_at?: string
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_companies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_companies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_leaderboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_friends: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -266,6 +442,56 @@ export type Database = {
       }
     }
     Views: {
+      city_leaderboard: {
+        Row: {
+          avg_carbon_saved: number | null
+          city: string | null
+          member_count: number | null
+          total_carbon_saved: number | null
+        }
+        Relationships: []
+      }
+      company_leaderboard: {
+        Row: {
+          avg_carbon_saved: number | null
+          id: string | null
+          logo_url: string | null
+          member_count: number | null
+          name: string | null
+          total_carbon_saved: number | null
+        }
+        Relationships: []
+      }
+      friends_leaderboard: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          current_streak: number | null
+          display_name: string | null
+          level: number | null
+          total_carbon_saved: number | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          city?: string | null
+          current_streak?: number | null
+          display_name?: string | null
+          level?: number | null
+          total_carbon_saved?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          city?: string | null
+          current_streak?: number | null
+          display_name?: string | null
+          level?: number | null
+          total_carbon_saved?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       weekly_leaderboard: {
         Row: {
           avatar_url: string | null
