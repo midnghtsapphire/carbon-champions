@@ -14,7 +14,8 @@ import {
   Target,
   Plus,
   ChevronRight,
-  History
+  History,
+  User
 } from 'lucide-react';
 
 interface Profile {
@@ -163,6 +164,11 @@ export default function Dashboard() {
             <span className="text-sm text-muted-foreground">
               {profile?.display_name || user?.email}
             </span>
+            <Link to="/profile">
+              <Button variant="ghost" size="sm">
+                <User className="w-4 h-4" />
+              </Button>
+            </Link>
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="w-4 h-4" />
             </Button>
