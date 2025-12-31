@@ -17,7 +17,8 @@ import {
   ChevronRight,
   History,
   User,
-  BarChart3
+  BarChart3,
+  Medal
 } from 'lucide-react';
 
 interface Profile {
@@ -273,7 +274,35 @@ export default function Dashboard() {
           onClose={() => setShowAnalytics(false)}
         />
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Leaderboard Preview */}
+          <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-bold text-foreground">Leaderboard</h2>
+              <Link to="/leaderboards">
+                <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-primary">
+                  View All <ChevronRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-accent/10 border border-accent/20">
+                <Medal className="w-5 h-5 text-accent" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Weekly Competition</p>
+                  <p className="text-xs text-muted-foreground">Compete globally</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
+                <Trophy className="w-5 h-5 text-primary" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Friends & Cities</p>
+                  <p className="text-xs text-muted-foreground">Local competitions</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Active Challenges */}
           <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-6">
             <div className="flex items-center justify-between mb-5">
