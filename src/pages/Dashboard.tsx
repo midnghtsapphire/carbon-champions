@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import CarbonEntryForm from '@/components/CarbonEntryForm';
 import CarbonEntryHistory from '@/components/CarbonEntryHistory';
 import CarbonAnalytics from '@/components/CarbonAnalytics';
+import GoalSetting from '@/components/GoalSetting';
+import GoalProgress from '@/components/GoalProgress';
 import { 
   Leaf, 
   LogOut, 
@@ -57,6 +59,7 @@ export default function Dashboard() {
   const [showEntryForm, setShowEntryForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showGoals, setShowGoals] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -273,6 +276,25 @@ export default function Dashboard() {
           open={showAnalytics}
           onClose={() => setShowAnalytics(false)}
         />
+
+        <GoalSetting
+          open={showGoals}
+          onClose={() => setShowGoals(false)}
+        />
+
+        {/* Goal Progress Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-foreground">Your Goals</h2>
+            <button 
+              onClick={() => setShowGoals(true)}
+              className="text-sm text-primary hover:underline"
+            >
+              Manage Goals
+            </button>
+          </div>
+          <GoalProgress onOpenGoals={() => setShowGoals(true)} />
+        </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {/* Leaderboard Preview */}
