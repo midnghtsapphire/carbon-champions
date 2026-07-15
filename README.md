@@ -1,5 +1,9 @@
 # Carbon Champions
 
+
+<!-- AUTO-PACKAGE-BADGES:START -->
+
+<!-- AUTO-PACKAGE-BADGES:END -->
 Carbon footprint tracking and offsetting
 
 ## Features
